@@ -3,36 +3,34 @@ import datetime
 import os
 
 from telethon import TelegramClient
+from telethon.sessions import StringSession
 from telethon.tl.functions.account import UpdateProfileRequest
 
 
 # ==============================
-# إعدادات من Railway Variables
+# Railway Variables
 # ==============================
 
 API_ID = int(os.environ["API_ID"])
 API_HASH = os.environ["API_HASH"]
+SESSION_STRING = os.environ["SESSION_STRING"]
 
-# الاسم الذي سيظهر قبل الوقت
-BASE_NAME = "ZAD nvr run"
-
-# اسم ملف Session
-SESSION_NAME = "session_name"
+BASE_NAME = os.getenv("BASE_NAME", "اسمك")
 
 
 # ==============================
-# إنشاء Telegram Client
+# Telegram Client
 # ==============================
 
 client = TelegramClient(
-    SESSION_NAME,
+    StringSession(SESSION_STRING),
     API_ID,
     API_HASH
 )
 
 
 # ==============================
-# تحويل الأرقام إلى أرقام مزخرفة
+# تحويل الأرقام
 # ==============================
 
 def to_fancy_digits(text):
@@ -48,15 +46,21 @@ def to_fancy_digits(text):
 
 
 # ==============================
-# تحديث الاسم بالوقت
+# تحديث الاسم
 # ==============================
 
 async def update_time_name():
 
-    await client.start()
+    await client.connect()
 
-    print("✅ تم تسجيل الدخول إلى Telegram")
-    print("🟢 السكريبت بدأ العمل")
+    # التأكد من أن الـSession صالحة
+    if not await client.is_user_authorized():
+        raise RuntimeError(
+            "❌ SESSION_STRING غير صالحة أو انتهت صلاحيتها"
+        )
+
+    print("✅ تم الاتصال بحساب Telegram")
+    print("🟢 السكريبت يعمل الآن")
 
     last_time = ""
 
@@ -69,7 +73,7 @@ async def update_time_name():
             # تحويل الأرقام
             fancy_time = to_fancy_digits(raw_time)
 
-            # التحديث فقط عند تغير الدقيقة
+            # لا نحدث الاسم إلا عند تغير الدقيقة
             if fancy_time != last_time:
 
                 new_name = f"{BASE_NAME} {fancy_time}"
@@ -83,7 +87,7 @@ async def update_time_name():
                 last_time = fancy_time
 
                 print(
-                    f"✅ تم تغيير الاسم إلى: {new_name}"
+                    f"✅ الاسم أصبح: {new_name}"
                 )
 
             # فحص كل 30 ثانية
@@ -91,7 +95,7 @@ async def update_time_name():
 
         except Exception as e:
 
-            print(f"❌ حدث خطأ: {e}")
+            print(f"❌ خطأ: {e}")
 
             await asyncio.sleep(60)
 
@@ -101,4 +105,12 @@ async def update_time_name():
 # ==============================
 
 if __name__ == "__main__":
-    asyncio.run(update_time_name())
+    try:
+        asyncio.run(update_time_name())
+
+    except KeyboardInterrupt:
+        print("⛔ تم إيقاف البرنامج")
+
+    except Exception as e:
+        print(f"❌ توقف البرنامج: {e}")
+        raise
