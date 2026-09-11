@@ -32,18 +32,19 @@ async def update_time_name():
         raise RuntimeError("SESSION_STRING غير صالحة أو انتهت صلاحيتها")
 
     print("تم الاتصال بحساب Telegram")
-    print("السكريبت يعمل الآن (عداد ثواني محسّن وسلس)")
+    print("السكريبت يعمل الآن (وضع آمن ومستقر)")
 
-    last_second = ""
+    last_time = ""
 
     while True:
         try:
-            now = datetime.datetime.now(ZoneInfo("Africa/Algiers"))
-            raw_time = now.strftime("%H:%M:%S")
-            
-            # نتحقق إذا تغيرت الثانية فعلياً
-            if raw_time != last_second:
-                fancy_time = to_fancy_digits(raw_time)
+            raw_time = datetime.datetime.now(
+                ZoneInfo("Africa/Algiers")
+            ).strftime("%H:%M")
+
+            fancy_time = to_fancy_digits(raw_time)
+
+            if fancy_time != last_time:
                 new_name = f"{BASE_NAME} {fancy_time}"
 
                 await client(
@@ -52,15 +53,14 @@ async def update_time_name():
                     )
                 )
 
-                last_second = raw_time
+                last_time = fancy_time
                 print(f"الاسم أصبح: {new_name}")
 
-            # فحص متكرر وسريع (كل 0.3 ثانية) لضمان التزامن الدقيق للثانية
-            await asyncio.sleep(0.3)
+            await asyncio.sleep(30)
 
         except Exception as e:
-            print(f"خطأ مؤقت: {e}")
-            await asyncio.sleep(5)
+            print(f"خطأ: {e}")
+            await asyncio.sleep(60)
 
 if __name__ == "__main__":
     try:
