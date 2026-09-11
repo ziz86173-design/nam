@@ -10,8 +10,8 @@ from telethon.tl.functions.account import UpdateProfileRequest
 # إعدادات من Railway Variables
 # ==============================
 
-API_ID = int(os.environ["39813032"])
-API_HASH = os.environ["5b2cb0003f325440321a1fdcf0bdd072"]
+API_ID = int(os.environ["API_ID"])
+API_HASH = os.environ["API_HASH"]
 
 # الاسم الذي سيظهر قبل الوقت
 BASE_NAME = "ZAD nvr run"
