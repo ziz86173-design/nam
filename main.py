@@ -32,34 +32,35 @@ async def update_time_name():
         raise RuntimeError("SESSION_STRING غير صالحة أو انتهت صلاحيتها")
 
     print("تم الاتصال بحساب Telegram")
-    print("السكريبت يعمل الآن (عداد الثواني)")
+    print("السكريبت يعمل الآن (عداد ثواني محسّن وسلس)")
+
+    last_second = ""
 
     while True:
         try:
-            # جلب الوقت مع الثواني بتوقيت الجزائر
-            raw_time = datetime.datetime.now(
-                ZoneInfo("Africa/Algiers")
-            ).strftime("%H:%M:%S")
+            now = datetime.datetime.now(ZoneInfo("Africa/Algiers"))
+            raw_time = now.strftime("%H:%M:%S")
+            
+            # نتحقق إذا تغيرت الثانية فعلياً
+            if raw_time != last_second:
+                fancy_time = to_fancy_digits(raw_time)
+                new_name = f"{BASE_NAME} {fancy_time}"
 
-            fancy_time = to_fancy_digits(raw_time)
-            new_name = f"{BASE_NAME} {fancy_time}"
-
-            # تحديث الاسم في تيليجرام
-            await client(
-                UpdateProfileRequest(
-                    first_name=new_name
+                await client(
+                    UpdateProfileRequest(
+                        first_name=new_name
+                    )
                 )
-            )
 
-            print(f"الاسم أصبح: {new_name}")
+                last_second = raw_time
+                print(f"الاسم أصبح: {new_name}")
 
-            # الانتظار لمدة ثانية واحدة للعد الموالي
-            await asyncio.sleep(1)
+            # فحص متكرر وسريع (كل 0.3 ثانية) لضمان التزامن الدقيق للثانية
+            await asyncio.sleep(0.3)
 
         except Exception as e:
-            print(f"خطأ (قد يكون بسبب الحماية أو ضغط تيليجرام): {e}")
-            # إذا تيليجرام دار حظر مؤقت، ننتظر 10 ثوانٍ ونعاودو
-            await asyncio.sleep(10)
+            print(f"خطأ مؤقت: {e}")
+            await asyncio.sleep(5)
 
 if __name__ == "__main__":
     try:
