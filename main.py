@@ -12,7 +12,7 @@ API_ID = int(os.environ["API_ID"])
 API_HASH = os.environ["API_HASH"]
 SESSION_STRING = os.environ["SESSION_STRING"]
 
-BASE_NAME = os.getenv("BASE_NAME", "ZAD")
+BASE_NAME = os.getenv("BASE_NAME", "Z")
 
 
 client = TelegramClient(
