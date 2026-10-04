@@ -12,7 +12,7 @@ API_ID = int(os.environ["API_ID"])
 API_HASH = os.environ["API_HASH"]
 SESSION_STRING = os.environ["SESSION_STRING"]
 
-BASE_NAME = os.getenv("BASE_NAME", "ᘜᑌᗰᗷᗩᒪᒪ̷ᵀᵐ 🫟")
+BASE_NAME = os.getenv("BASE_NAME", "Z")
 
 
 client = TelegramClient(
@@ -22,14 +22,18 @@ client = TelegramClient(
 )
 
 
+
 def to_fancy_digits(text):
     normal_digits = "0123456789"
-    fancy_digits = "𝟬𝟭𝟮𝟯𝟰𝟱𝟲𝟳𝟴𝟵"
+    fancy_digits = "𝟶𝟷𝟸𝟹𝟺𝟻𝟼𝟽𝟾𝟿"
 
     digits_map = str.maketrans(
         normal_digits,
         fancy_digits
     )
+
+    return str(text).translate(digits_map)
+
 
     return str(text).translate(digits_map)
 
